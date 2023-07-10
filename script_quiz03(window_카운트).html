@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+	
+	<div>
+	<h3>네이버 타이머 도전하기</h3>
+	<p>조건</p>
+	<ol>
+		<li>select태그는 시간:99 or 분:60 or 초:60으로 화면이 생성될 때 엘리먼트 생성기법으로 처리합니다.</li>
+		<li>시간설정 버튼을 클릭하면 시간이 세팅됩니다.</li>
+		<li>타이머시작버튼은 토글형태로 타이머가 동작중이라면 일시정지 버튼으로 활성화 됩니다</li>
+		<li>사용자가 버튼을 잘못클릭하는 경우를 고려하여, 어떠한 경우라도 중복으로 타이밍이 발생되면 안됩니다.</li>
+		<!--
+		<li>1순위: 1만원 스타벅스 기프트콘 / 2,3순위: 5천원 스타벅스 기프트콘</li>
+		-->
+	</ol>
+	</div>
+	
+    <h3>시간을 선택하세요</h3>
+    <select class="hh">
+        
+    </select>
+    <select class="mm">
+        
+    </select>
+    <select class="ss">
+        
+    </select>
+    <button type="button" id="setTime">시간설정</button>
+    <button type="button" id="startTime">타이머시작</button>
+    
+    <div class="clock">
+        <h2>00:00:00</h2>
+    </div>
+
+    <script>
+        
+        /* 전역객체 */
+        var obj = {};
+        /* 로드시 시간 생성 */
+        (function() {
+            obj.hh = document.querySelector(".hh");
+            obj.mm = document.querySelector(".mm");
+            obj.ss = document.querySelector(".ss");
+            for(var i = 0; i <= 99; i++) {
+                option = document.createElement("option");
+                option.value = (i < 10 ? "0"+i : i );
+                option.innerHTML = (i < 10 ? "0"+i : i );
+                obj.hh.appendChild(option);
+            }
+            for(var i = 0; i <= 60; i++) {
+                
+                option = document.createElement("option");
+                option.value = (i < 10 ? "0"+i : i );
+                option.innerHTML = (i < 10 ? "0"+i : i );
+                obj.mm.appendChild(option);
+                
+                option2 = document.createElement("option");
+                option2.value = (i < 10 ? "0"+i : i );
+                option2.innerHTML = (i < 10 ? "0"+i : i );
+                obj.ss.appendChild(option2);
+            }
+        })();
+
+        var clock = document.querySelector(".clock h2");
+        var setTime = document.getElementById("setTime");
+        setTime.addEventListener("click", createTime);
+        
+        /* 시간만들기 */
+        function createTime() {
+
+            var hours = obj.hh.value;
+            var minutes = obj.mm.value;
+            var seconds = obj.ss.value;
+
+            var time = hours + ":" + minutes + ":" + seconds;
+            clock.innerHTML = time;
+            
+            
+        }
+
+        /* 시간계산하기 */
+        var startTime = document.getElementById("startTime");
+        startTime.addEventListener("click", handleTime); //핸들링 함수 호출
+
+        var runningStop; 
+
+        /* 시간 핸들링 */
+        function handleTime() {
+
+            //버튼핸들링
+            var text = startTime.innerHTML;
+            if(text == "타이머시작") {
+                startTime.innerHTML = "일시정지"; //시작이었다면, 일시정지로 바꾸고 시작한다.
+                runningStop = window.setInterval(runningTime, 1000); //인터벌함수 호출
+            } 
+            if(text == "일시정지") { //일시정지였다면, 시작으로 바꾸고 정지한다.
+                startTime.innerHTML = "타이머시작";
+                window.clearInterval(runningStop);
+            }
+
+
+           
+        }
+
+        /* 시간 인터벌 함수 */
+        function runningTime() {
+            
+            var arr = clock.innerHTML.split(":"); //문자열나누기
+
+            //탈출과 stop의 조건
+            if(arr[0] == 0 && arr[1] == 0 && arr[2] == 0) {
+                // window.clearInterval(runningStop);
+                // startTime.innerHTML = "타이머시작";
+                handleTime();
+                return;
+            }
+
+            
+            //시간계산(밀리초)
+            var hours = arr[0] * 60 * 60 * 1000; 
+            var minutes = arr[1] * 60 * 1000;
+            var seconds = arr[2] * 1000;
+
+
+            var millis = hours + minutes + seconds - 1000 ; //1초 차감시간
+
+            hours = parseInt( millis / (60 * 60 * 1000) ); //시간 저장
+            millis %= (60 * 60 * 1000); //시간 나머지
+            
+            minutes = parseInt( millis / (60 * 1000) ); //분 저장
+            millis %= (60 * 1000); //분 나머지
+            
+            seconds = parseInt(millis / (1000) );
+            millis %= (1000); //초
+            
+            console.log(hours, minutes, seconds);
+
+            
+
+            var time = (hours < 10 ? "0" + hours : hours) + ":" + 
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                    (seconds < 10 ? "0" + seconds : seconds);
+
+            clock.innerHTML = time; //삽입
+
+
+
+        }
+
+
+
+    </script>
+
+
+
+</body>
+</html>
